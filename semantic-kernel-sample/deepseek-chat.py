@@ -1,9 +1,15 @@
 import asyncio
 import logging
+import os
 
 from semantic_kernel import Kernel
 from semantic_kernel.contents.chat_history import ChatHistory
 from semantic_kernel.utils.logging import setup_logging
+from semantic_kernel.connectors.ai.open_ai import (
+    OpenAIChatCompletion,
+    OpenAIChatPromptExecutionSettings
+)
+from openai import AsyncOpenAI
 
 
 def list_all_loggers():
@@ -50,6 +56,11 @@ async def main2():
 
 
 async def main():
+    # Get API key from environment variable
+    DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
+    if not DEEPSEEK_API_KEY:
+        raise ValueError("Please set DEEPSEEK_API_KEY environment variable")
+
     chat_service = OpenAIChatCompletion(
         ai_model_id="deepseek-chat",  # or "deepseek-reasoner"
         async_client=AsyncOpenAI(
