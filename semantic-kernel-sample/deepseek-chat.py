@@ -103,7 +103,6 @@ async def streaming_chat():
         history.add_assistant_message("".join(chunks))
 
 
-
 def main():
     fire.Fire(
         {
