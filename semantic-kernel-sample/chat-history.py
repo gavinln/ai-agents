@@ -10,6 +10,7 @@ from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion, OpenAIChatPromptExecutionSettings)
 from semantic_kernel.contents.chat_history import ChatHistory
+from semantic_kernel.contents import ChatMessageContent, AuthorRole, TextContent, ImageContent
 
 
 def get_chat_service():
