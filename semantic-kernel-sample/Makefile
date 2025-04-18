@@ -32,7 +32,7 @@ aider:  ## run aider
 
 .PHONY: env-up
 env-up:
-	UV_PROJECT_ENVIRONMENT=$(VENV) uv sync
+	@UV_PROJECT_ENVIRONMENT=$(VENV) uv sync -q
 
 .PHONY: env-rm
 env-rm:
