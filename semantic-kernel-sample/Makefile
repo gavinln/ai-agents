@@ -61,4 +61,8 @@ deepseek-hello: env-up  ## deepseek hello example
 deepseek-chat: env-up  ## deepseek chat example
 	$(UV_RUN) python deepseek-chat.py chat
 
+.PHONY: deepseek-streaming-chat
+deepseek-streaming-chat: env-up  ## deepseek streaming chat example
+	$(UV_RUN) python deepseek-chat.py streaming-chat
+
 

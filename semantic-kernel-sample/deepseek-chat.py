@@ -68,11 +68,48 @@ async def chat():
         history.add_message(response)
 
 
+async def streaming_chat():
+    kernel = Kernel()
+    chat_service = get_chat_service()
+    execution_settings = OpenAIChatPromptExecutionSettings()
+    history = ChatHistory()
+
+    # Initiate a back-and-forth chat
+    userInput = None
+    while True:
+        # Collect user input
+        print("-----" * 8)
+        userInput = input("User (exit to end) > ")
+
+        # Terminate the loop if the user says "exit"
+        if userInput == "exit":
+            break
+
+        history.add_user_message(userInput)
+
+        response = chat_service.get_streaming_chat_message_content(
+            chat_history=history,
+            settings=execution_settings,
+            kernel=kernel,
+        )
+
+        print("Assistant > ", end="")
+        chunks = []
+        async for chunk in response:
+            print(chunk, end="")
+            chunks.append(str(chunk))
+        print()
+
+        history.add_assistant_message("".join(chunks))
+
+
+
 def main():
     fire.Fire(
         {
             "hello": hello,
             "chat": chat,
+            "streaming-chat": streaming_chat,
         }
     )
 
