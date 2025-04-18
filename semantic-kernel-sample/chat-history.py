@@ -9,8 +9,9 @@ from openai import AsyncOpenAI
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion, OpenAIChatPromptExecutionSettings)
+from semantic_kernel.contents import (AuthorRole, ChatMessageContent,
+                                      ImageContent, TextContent)
 from semantic_kernel.contents.chat_history import ChatHistory
-from semantic_kernel.contents import ChatMessageContent, AuthorRole, TextContent, ImageContent
 
 
 def get_chat_service():
@@ -97,17 +98,49 @@ def history_example():
             name="Laimonis Dumins",
             items=[
                 TextContent(text="What available on this menu"),
-                ImageContent(uri="https://example.com/menu.jpg")
-            ]
+                ImageContent(uri="https://example.com/menu.jpg"),
+            ],
         )
     )
     print_chat_history(chat_history)
+
+
+def history_functions():
+    chat_history = ChatHistory()
+    chat_history.add_message(
+        ChatMessageContent(
+            role=AuthorRole.ASSISTANT,
+            items=[
+                FunctionCallContent(
+                    name="get_user_allergies",
+                    id="0001",
+                    arguments=str({"username": "laimonisdumins"})
+                ),
+            ]
+        )
+    )
+
+    # Add a simulated function results from the tool role
+    chat_history.add_message(
+        ChatMessageContent(
+            role=AuthorRole.TOOL,
+            items=[
+                FunctionResultContent(
+                    name="get_user_allergies",
+                    id="0001",
+                    result='{ "allergies": ["peanuts", "gluten"] }'
+                )
+            ]
+        )
+    )
+    pass
 
 
 def main():
     fire.Fire(
         {
             "history-example": history_example,
+            "history-functions": history_functions,
         }
     )
 
