@@ -1,82 +1,84 @@
-import asyncio
 import logging
 import os
 
+import fire
+from openai import AsyncOpenAI
 from semantic_kernel import Kernel
-from semantic_kernel.contents.chat_history import ChatHistory
-from semantic_kernel.utils.logging import setup_logging
 from semantic_kernel.connectors.ai.open_ai import (
     OpenAIChatCompletion,
-    OpenAIChatPromptExecutionSettings
+    OpenAIChatPromptExecutionSettings,
 )
-from openai import AsyncOpenAI
+from semantic_kernel.contents.chat_history import ChatHistory
 
 
-def list_all_loggers():
-    # Get the dictionary of all loggers
-    loggers = logging.Logger.manager.loggerDict
-
-    print("Existing loggers:")
-    for name, logger in loggers.items():
-        if not isinstance(logger, logging.PlaceHolder):
-            print(f"- {name} (level: {logging.getLevelName(logger.level)})")
-        else:
-            print(f"- {name} (placeholder)")
-
-
-async def main2():
-    # Initialize the kernel
-    kernel = Kernel()
-
-    # Set the logging level for  semantic_kernel.kernel to DEBUG.
-
-    list_all_loggers()
-    setup_logging()
-    # list_all_loggers()
-
-    logging.getLogger("kernel").setLevel(logging.DEBUG)
-
-    # Create a history of the conversation
-    history = ChatHistory()
-
-    # Initiate a back-and-forth chat
-    userInput = None
-    while True:
-        # Collect user input
-        userInput = input("User > ")
-
-        # Terminate the loop if the user says "exit"
-        if userInput == "exit":
-            break
-
-        # Add user input to the history
-        history.add_user_message(userInput)
-
-        print(history)
-
-
-async def main():
+def get_chat_service():
     # Get API key from environment variable
     DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY")
     if not DEEPSEEK_API_KEY:
         raise ValueError("Please set DEEPSEEK_API_KEY environment variable")
 
     chat_service = OpenAIChatCompletion(
-        ai_model_id="deepseek-chat",  # or "deepseek-reasoner"
+        ai_model_id="deepseek-chat",
         async_client=AsyncOpenAI(
             api_key=DEEPSEEK_API_KEY,
             base_url="https://api.deepseek.com",
         ),
     )
+    return chat_service
+
+
+async def hello():
+    chat_service = get_chat_service()
+    chat_settings = OpenAIChatPromptExecutionSettings()
 
     chat_history = ChatHistory()
     chat_history.add_user_message("Hello, how are you?")
 
     response = await chat_service.get_chat_message_content(
-        chat_history, OpenAIChatPromptExecutionSettings()
+        chat_history, chat_settings
     )
     print(response)
 
 
+async def chat():
+    kernel = Kernel()
+    logging.getLogger("kernel").setLevel(logging.DEBUG)
+
+    chat_service = get_chat_service()
+    chat_settings = OpenAIChatPromptExecutionSettings()
+    history = ChatHistory()
+
+    # Initiate a back-and-forth chat
+    userInput = None
+    while True:
+        # Collect user input
+        userInput = input("User (exit to end) > ")
+
+        # Terminate the loop if the user says "exit"
+        if userInput == "exit":
+            break
+
+        history.add_user_message(userInput)
+
+        response = await chat_service.get_chat_message_content(
+            chat_history=history,
+            settings=chat_settings,
+            kernel=kernel,
+        )
+
+        # Print the results
+        print("Assistant > " + str(response))
+        history.add_message(response)
+
+
+def main():
+    fire.Fire(
+        {
+            "hello": hello,
+            "chat": chat,
+        }
+    )
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
