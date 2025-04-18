@@ -71,8 +71,11 @@ async def chat():
 
 
 def print_chat_history(chat_history: ChatHistory):
-    " displays the ChatHistory messages "
-    pass
+    """Displays the ChatHistory messages in a formatted way"""
+    print("\n--- Chat History ---")
+    for i, message in enumerate(chat_history.messages, 1):
+        print(f"{i}. {message.role.upper()}: {message.content}")
+    print("-------------------\n")
 
 
 def history_example():
@@ -85,8 +88,7 @@ def history_example():
         "We have pizza, pasta, and salad available to order. What would you like to order?"
     )
     chat_history.add_user_message("I'd like to have the first option, please.")
-    print(chat_history)
-    breakpoint()
+    print_chat_history(chat_history)
 
 
 def main():
