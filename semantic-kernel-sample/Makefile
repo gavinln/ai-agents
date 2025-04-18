@@ -49,8 +49,16 @@ clean: env-rm  ## remove temporary files
 nvim:  ## nvim
 	$(UV_RUN) nvim -S Session.vim
 
-.PHONY: hello
-hello: env-up  ## run hello example
-	$(UV_RUN) python hello.py
+.PHONY: tmux
+tmux:  ## tmux
+	$(UV_RUN) tmux
+
+.PHONY: deepseek-hello
+deepseek-hello: env-up  ## deepseek hello example
+	$(UV_RUN) python deepseek-chat.py hello
+
+.PHONY: deepseek-chat
+deepseek-chat: env-up  ## deepseek chat example
+	$(UV_RUN) python deepseek-chat.py chat
 
 

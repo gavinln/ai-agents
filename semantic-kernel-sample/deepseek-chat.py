@@ -1,4 +1,3 @@
-import logging
 import os
 
 import fire
@@ -29,29 +28,28 @@ def get_chat_service():
 
 async def hello():
     chat_service = get_chat_service()
-    chat_settings = OpenAIChatPromptExecutionSettings()
+    execution_settings = OpenAIChatPromptExecutionSettings()
 
     chat_history = ChatHistory()
     chat_history.add_user_message("Hello, how are you?")
 
     response = await chat_service.get_chat_message_content(
-        chat_history, chat_settings
+        chat_history, execution_settings
     )
     print(response)
 
 
 async def chat():
     kernel = Kernel()
-    logging.getLogger("kernel").setLevel(logging.DEBUG)
-
     chat_service = get_chat_service()
-    chat_settings = OpenAIChatPromptExecutionSettings()
+    execution_settings = OpenAIChatPromptExecutionSettings()
     history = ChatHistory()
 
     # Initiate a back-and-forth chat
     userInput = None
     while True:
         # Collect user input
+        print("-----" * 8)
         userInput = input("User (exit to end) > ")
 
         # Terminate the loop if the user says "exit"
@@ -62,11 +60,10 @@ async def chat():
 
         response = await chat_service.get_chat_message_content(
             chat_history=history,
-            settings=chat_settings,
+            settings=execution_settings,
             kernel=kernel,
         )
 
-        # Print the results
         print("Assistant > " + str(response))
         history.add_message(response)
 
