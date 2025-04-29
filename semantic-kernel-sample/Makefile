@@ -65,4 +65,12 @@ deepseek-chat: env-up  ## deepseek chat example
 deepseek-streaming-chat: env-up  ## deepseek streaming chat example
 	$(UV_RUN) python deepseek-chat.py streaming-chat
 
+.PHONY: chat-history-example
+chat-history-example: env-up  ## chat history example
+	$(UV_RUN) python chat-history.py history-example
+
+.PHONY: chat-history-functions
+chat-history-functions: env-up  ## chat history simulated functions
+	$(UV_RUN) python chat-history.py history-functions
+
 

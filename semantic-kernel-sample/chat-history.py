@@ -8,10 +8,17 @@ import fire
 from openai import AsyncOpenAI
 from semantic_kernel import Kernel
 from semantic_kernel.connectors.ai.open_ai import (
-    OpenAIChatCompletion, OpenAIChatPromptExecutionSettings)
-from semantic_kernel.contents import (AuthorRole, ChatMessageContent,
-                                      FunctionCallContent, FunctionResultContent,
-                                      ImageContent, TextContent)
+    OpenAIChatCompletion,
+    OpenAIChatPromptExecutionSettings,
+)
+from semantic_kernel.contents import (
+    AuthorRole,
+    ChatMessageContent,
+    FunctionCallContent,
+    FunctionResultContent,
+    ImageContent,
+    TextContent,
+)
 from semantic_kernel.contents.chat_history import ChatHistory
 
 
@@ -77,7 +84,18 @@ def print_chat_history(chat_history: ChatHistory):
     """Displays the ChatHistory messages in a formatted way"""
     print("----- Chat History -----")
     for i, message in enumerate(chat_history.messages):
-        print(f"{i}. {message.role.upper()}: {message.content}")
+        print(f"{i}. {message.role.upper()}:")
+        for item in message.items:
+            if item.content_type == "text":
+                print("text", item.text)
+            elif item.content_type == "function_call":
+                print("function_call", item.name)
+            elif item.content_type == "function_result":
+                print("function_result", item.result)
+            elif item.content_type == "image":
+                print("image", item.uri)
+            else:
+                assert False, f"Unknown content type {item.content_type}"
     print("------------------------")
 
 
@@ -115,9 +133,9 @@ def history_functions():
                 FunctionCallContent(
                     name="get_user_allergies",
                     id="0001",
-                    arguments=str({"username": "laimonisdumins"})
+                    arguments=str({"username": "laimonisdumins"}),
                 ),
-            ]
+            ],
         )
     )
 
@@ -129,12 +147,12 @@ def history_functions():
                 FunctionResultContent(
                     name="get_user_allergies",
                     id="0001",
-                    result='{ "allergies": ["peanuts", "gluten"] }'
+                    result='{ "allergies": ["peanuts", "gluten"] }',
                 )
-            ]
+            ],
         )
     )
-    pass
+    print_chat_history(chat_history)
 
 
 def main():
